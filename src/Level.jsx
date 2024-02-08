@@ -1,6 +1,6 @@
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import { RigidBody, useRapier } from '@react-three/rapier'
+import { CuboidCollider, RigidBody, useRapier } from '@react-three/rapier'
 import { useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 
@@ -147,6 +147,47 @@ export function BlockEnd({ position = [0, 0, 0] }) {
   </group>
 }
 
+function BoundsWalls({ length = 2 }) {
+  return <>
+
+    <RigidBody type='fixed' restitution={0.2} friction={0}>
+      {/* right wall  */}
+      <mesh
+        position={[2.15, 0.75, -(length * 2) + 2]}
+        geometry={boxGeometry}
+        material={wallMaterial}
+        scale={[0.3, 1.5, 4 * length]}
+        castShadow
+      />
+      {/* left wall  */}
+      <mesh
+        position={[-2.15, 0.75, -(length * 2) + 2]}
+        geometry={boxGeometry}
+        material={wallMaterial}
+        scale={[0.3, 1.5, 4 * length]}
+        receiveShadow
+      />
+      {/* end wall  */}
+      <mesh
+        position={[0, 0.75, -(length * 4) + 2]}
+        geometry={boxGeometry}
+        material={wallMaterial}
+        scale={[4.6, 1.5, 0.3]}
+        castShadow
+      />
+
+      {/* rigid floor colider so that ball dont fall from the floor  */}
+      <CuboidCollider
+        args={[2, 0.1, 2 * length]}
+        position={[0, -0.1, -(length * 2) + 2]}
+        restitution={0.2}
+        friction={1}
+      />
+
+    </RigidBody>
+  </>
+}
+
 export default function Level({ count = 5, types = [BlockSpinner, BlockAxe, BlockLimbo] }) {
 
   const blocks = useMemo(() => {
@@ -162,11 +203,14 @@ export default function Level({ count = 5, types = [BlockSpinner, BlockAxe, Bloc
 
   return <>
     <BlockStart position={[0, 0, 0]} />
+
     {blocks.map((Block, index) => <Block
       position={[0, 0, -(index + 1) * 4]}
       key={index}
     />
     )}
+
     <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+    <BoundsWalls length={count + 2} />
   </>
 }
