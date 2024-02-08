@@ -1,3 +1,4 @@
+import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { RigidBody, useRapier } from '@react-three/rapier'
 import { useRef, useState } from 'react'
@@ -125,11 +126,33 @@ function BlockAxe({ position = [0, 0, 0] }) {
   </group>
 }
 
+function BlockEnd({ position = [0, 0, 0] }) {
+  const hamBurger = useGLTF('./hamburger.glb')
+
+  hamBurger.scene.children.forEach((mesh) => {
+    mesh.castShadow = true
+  })
+
+  return <group position={position}>
+    <mesh
+      geometry={boxGeometry}
+      receiveShadow
+      position={[0, 0, 0]}
+      scale={[4, 0.2, 4]}
+      material={floor1Material}
+    />
+    <RigidBody type='fixed' colliders="hull" position={[0, 0.25, 0]} restitution={0.2} friction={0}>
+      <primitive object={hamBurger.scene} scale={0.2} />
+    </RigidBody>
+  </group>
+}
+
 export default function Level() {
   return <>
-    <BlockStart position={[0, 0, 12]} />
-    <BlockSpinner position={[0, 0, 8]} />
-    <BlockLimbo position={[0, 0, 4]} />
-    <BlockAxe position={[0, 0, 0]} />
+    <BlockStart position={[0, 0, 16]} />
+    <BlockSpinner position={[0, 0, 12]} />
+    <BlockLimbo position={[0, 0, 8]} />
+    <BlockAxe position={[0, 0, 4]} />
+    <BlockEnd position={[0, 0, 0]} />
   </>
 }
