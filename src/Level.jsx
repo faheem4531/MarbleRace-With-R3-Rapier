@@ -53,16 +53,48 @@ function BlockSpinner({ position = [0, 0, 0] }) {
         receiveShadow
         geometry={boxGeometry}
         material={obstacleMaterial}
-        position={[0, -0.1, 0]}
         scale={[3.5, 0.3, 0.3]}
       />
     </RigidBody>
   </group>
 }
 
+function BlockLimbo({ position = [0, 0, 0] }) {
+
+  const obstacle = useRef()
+  const [timeOffset] = useState(() => Math.random() * Math.PI * 2)
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+
+    const y = Math.sin(time + timeOffset) + 1.15
+    obstacle.current.setNextKinematicTranslation({ x: position[0], y: position[1] + y, z: position[2] })
+  })
+
+  return <group position={position}>
+    <mesh
+      geometry={boxGeometry}
+      receiveShadow
+      position={[0, -0.1, 0]}
+      scale={[4, 0.2, 4]}
+      material={floor2Material}
+    />
+
+    <RigidBody ref={obstacle} type='kinematicPosition' position={[0, 0.3, 0]} restitution={0.2} friction={0}>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={boxGeometry}
+        material={obstacleMaterial}
+        scale={[3.5, 0.3, 0.3]}
+      />
+    </RigidBody>
+  </group>
+}
 export default function Level() {
   return <>
-    <BlockStart position={[0, 0, 4]} />
-    <BlockSpinner position={[0, 0, 0]} />
+    <BlockStart position={[0, 0, 8]} />
+    <BlockSpinner position={[0, 0, 4]} />
+    <BlockLimbo position={[0, 0, 0]} />
   </>
 }
