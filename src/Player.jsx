@@ -1,12 +1,44 @@
 import { useFrame } from "@react-three/fiber";
-import { RigidBody } from "@react-three/rapier";
-import { useRef } from "react";
+import { RigidBody, useRapier } from "@react-three/rapier";
+import { useEffect, useRef } from "react";
 import { useKeyboardControls } from '@react-three/drei'
+
 
 export default function Player() {
 
   const body = useRef()
   const [subscribeKeys, getKeys] = useKeyboardControls()
+  const { rapier, world } = useRapier()
+  const rapierWorld = world.raw()
+
+
+  function jump() {
+
+    const origin = body.current.translation()
+    origin.y -= 0.31
+
+    const direction = { x: 0, y: -1, z: 0 }
+
+    const ray = new rapier.Ray(origin, direction)
+    const hit = rapierWorld.castRay(ray, 10, true)
+
+    if (hit.toi < 0.15)
+      body.current.applyImpulse({ x: 0, y: 0.5, z: 0 })
+  }
+
+  useEffect(() => {
+    const unsubscribeJump = subscribeKeys(
+      (state) => state.jump,
+      (value) => {
+        if (value)
+          jump()
+      }
+    )
+
+    return () => {
+      unsubscribeJump()
+    }
+  }, [])
 
   useFrame((state, delta) => {
 
@@ -42,6 +74,7 @@ export default function Player() {
     body.current.applyTorqueImpulse(torque)
   })
 
+
   return <RigidBody
     ref={body}
     colliders="ball"
@@ -49,7 +82,8 @@ export default function Player() {
     friction={1}
     linearDamping={0.5}
     angularDamping={0.5}
-    position={[0, 1, 0]}>
+    position={[0, 1, 0]}
+  >
     <mesh castShadow>
       <icosahedronGeometry args={[0.3, 1]} />
       <meshStandardMaterial flatShading color="mediumpurple" />
