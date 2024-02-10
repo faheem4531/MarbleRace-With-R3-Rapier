@@ -188,7 +188,7 @@ function BoundsWalls({ length = 2 }) {
   </>
 }
 
-export default function Level({ count = 5, types = [BlockSpinner, BlockAxe, BlockLimbo] }) {
+export default function Level({ count = 5, types = [BlockSpinner, BlockAxe, BlockLimbo], seed = 0 }) {
 
   const blocks = useMemo(() => {
     const blocks = []
@@ -199,7 +199,7 @@ export default function Level({ count = 5, types = [BlockSpinner, BlockAxe, Bloc
     }
 
     return blocks
-  }, [count, types])
+  }, [count, types, seed])
 
   return <>
     <BlockStart position={[0, 0, 0]} />

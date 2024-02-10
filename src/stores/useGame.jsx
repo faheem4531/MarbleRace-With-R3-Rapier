@@ -5,6 +5,7 @@ export default create(subscribeWithSelector((set) => {
 
   return {
     blockCounts: 3,
+    blockSeed: 0,
 
     /**
     * Time
@@ -32,7 +33,7 @@ export default create(subscribeWithSelector((set) => {
 
       set((state) => {
         if (state.phase == 'playing' || state.phase === 'ended')
-          return { phase: 'ready' }
+          return { phase: 'ready', blockSeed: Math.random() }
 
         return {}
       })
