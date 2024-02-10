@@ -4,6 +4,7 @@ import Level from './Level.jsx'
 import { Debug, Physics } from '@react-three/rapier'
 import Player from './Player.jsx'
 import useGame from './stores/useGame.jsx'
+import Effects from './Effects.jsx'
 
 export default function Experience() {
 
@@ -23,6 +24,8 @@ export default function Experience() {
             <Level count={blockCounts} seed={blockSeed} />
             <Player />
         </Physics>
+
+        <Effects />
 
     </>
 }
